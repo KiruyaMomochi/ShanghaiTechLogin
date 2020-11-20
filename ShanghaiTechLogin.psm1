@@ -31,7 +31,7 @@ function Invoke-STULogin {
     }
 
     $Login = Invoke-RestMethod -Uri $Script:LOGIN_URL `
-             -Method Post -Body $Postdata -Headers $Script:HEADER`
+             -Method Post -Body $Postdata -Headers $Script:HEADER `
              -SessionVariable LoginSession
     $Token = $Login.token -replace 'token=', ''
     $LoginSession.Headers.Add('X-XSRF-TOKEN', $Token)
@@ -63,7 +63,7 @@ function Invoke-STUHeartbeat {
         $UserName = (Get-STULoginAccount -Session $Session)
     )
     
-    $Heartbeat = Invoke-RestMethod -Uri $Script:HEARTBEAT_URL -Method Post -WebSession $Session`
+    $Heartbeat = Invoke-RestMethod -Uri $Script:HEARTBEAT_URL -Method Post -WebSession $Session `
                  -Headers $Script:HEADER -Body @{userName = $UserName }
     return $Heartbeat
 }
