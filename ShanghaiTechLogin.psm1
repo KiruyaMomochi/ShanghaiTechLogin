@@ -1,11 +1,13 @@
 
 $Script:PROMPT_TITLE = "上海科技大学网络认证"
 $Script:PROMPT_MESSAGE = "ShanghaiTech Network Authentication"
+$Script:IPADDR = "10.15.44.172"
 $Script:STUHOST = "controller.shanghaitech.edu.cn"
-$Script:LOGIN_URL = "https://controller.shanghaitech.edu.cn:8445/PortalServer/Webauth/webAuthAction!login.action"
-$Script:RESULT_URL = "https://controller.shanghaitech.edu.cn:8445/PortalServer/Webauth/webAuthAction!syncPortalAuthResult.action"
-$Script:LOGOUT_URL = "https://controller.shanghaitech.edu.cn:8445/PortalServer/Webauth/webAuthAction!logout.action"
-$Script:HEARTBEAT_URL = "https://controller.shanghaitech.edu.cn:8445/PortalServer/Webauth/webAuthAction!hearbeat.action"
+$Script:HEADER = [System.Collections.IDictionary]@{Host=${Script:STUHOST}}
+$Script:LOGIN_URL = "https://${Script:IPADDR}:8445/PortalServer/Webauth/webAuthAction!login.action"
+$Script:RESULT_URL = "https://${Script:IPADDR}:8445/PortalServer/Webauth/webAuthAction!syncPortalAuthResult.action"
+$Script:LOGOUT_URL = "https://${Script:IPADDR}:8445/PortalServer/Webauth/webAuthAction!logout.action"
+$Script:HEARTBEAT_URL = "https://${Script:IPADDR}:8445/PortalServer/Webauth/webAuthAction!hearbeat.action"
 $Script:TEST_URI = "http://example.com"
 
 #curl -X POST -F "userName=songfu" -F "password=songfu" -F "hasValidateCode=false" 'https://controller.shanghaitech.edu.cn:8445/PortalServer/Webauth/webAuthAction!login.action'
@@ -28,7 +30,9 @@ function Invoke-STULogin {
         authLan         = 'zh_CN'
     }
 
-    $Login = Invoke-RestMethod -Uri $Script:LOGIN_URL -Method Post -Body $Postdata -SessionVariable LoginSession
+    $Login = Invoke-RestMethod -Uri $Script:LOGIN_URL `
+             -Method Post -Body $Postdata -Headers $Script:HEADER`
+             -SessionVariable LoginSession
     $Token = $Login.token -replace 'token=', ''
     $LoginSession.Headers.Add('X-XSRF-TOKEN', $Token)
 
@@ -44,7 +48,8 @@ function Invoke-STULogout {
         [string]
         $UserName = (Get-STULoginAccount -Session $Session)
     )
-    $Logout = Invoke-RestMethod -Uri $Script:LOGOUT_URL -Method Post -WebSession $Session -Body @{userName = $UserName }
+    $Logout = Invoke-RestMethod -Uri $Script:LOGOUT_URL -Method Post -WebSession $Session `
+              -Headers $Script:HEADER -Body @{userName = $UserName }
     return $Logout
 }
 
@@ -58,7 +63,8 @@ function Invoke-STUHeartbeat {
         $UserName = (Get-STULoginAccount -Session $Session)
     )
     
-    $Heartbeat = Invoke-RestMethod -Uri $Script:HEARTBEAT_URL -Method Post -WebSession $Session -Body @{userName = $UserName }
+    $Heartbeat = Invoke-RestMethod -Uri $Script:HEARTBEAT_URL -Method Post -WebSession $Session`
+                 -Headers $Script:HEADER -Body @{userName = $UserName }
     return $Heartbeat
 }
 
@@ -89,7 +95,7 @@ function Get-STULoginData {
         [Microsoft.PowerShell.Commands.WebRequestSession]
         $Session
     )
-    $Result = Invoke-RestMethod -Uri $Script:RESULT_URL -WebSession $Session
+    $Result = Invoke-RestMethod -Uri $Script:RESULT_URL -WebSession $Session -Headers $Script:HEADER
     return $Result.data
 }
 
