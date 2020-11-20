@@ -1,8 +1,4 @@
 
-# https://controller.shanghaitech.edu.cn:8445/PortalServer/Webauth/webAuthAction!syncPortalAuthResult.action
-# TODO: support custom DNS
-# Detect in script ?
-
 $Script:PROMPT_TITLE = "上海科技大学网络认证"
 $Script:PROMPT_MESSAGE = "ShanghaiTech Network Authentication"
 $Script:STUHOST = "controller.shanghaitech.edu.cn"
