@@ -69,7 +69,7 @@ Description = 'Help you to login into ShanghaiTech network'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @("Start-STUHeartbeat", "Start-STULogin", "Start-STULoginer")
+FunctionsToExport = @("Start-STUHeartbeat", "Start-STULogin", "Start-STULoginer", "Test-STUNetwork", "Test-STULogin")
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

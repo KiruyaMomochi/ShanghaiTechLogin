@@ -107,6 +107,10 @@ function Get-STUIPAddress {
     return (Get-STULoginData -Session $Session).ip
 }
 
+<#
+ .SYNOPSIS
+  Return true if the host is connected to ShanghaiTech network
+#>
 function Test-STUNetwork {
     [CmdletBinding()]
     # prarm wlan ethernet
@@ -119,11 +123,16 @@ function Test-STUNetwork {
         catch [System.ComponentModel.Win32Exception] {
             return $false
         }
+        return $true
     }
 
-    return $true
+    return $false
 }
 
+<#
+ .SYNOPSIS
+  Return true if need to login to ShanghaiTech network
+#>
 function Test-STULogin {
     try {
         $Response = Invoke-WebRequest -Uri $Script:TEST_URI -MaximumRedirection 0 -ErrorAction Stop
@@ -233,6 +242,10 @@ function Remove-STUCredential {
     return $Remove
 }
 
+<#
+ .SYNOPSIS
+  Login to ShanghaiTech Network
+#>
 function Start-STULogin {
     [CmdletBinding()]
     param(
@@ -293,6 +306,10 @@ function Test-STUHeartbeat {
     return $false
 }
 
+<#
+ .SYNOPSIS
+  Send heartbeats to ShanghaiTech wifi controller
+#>
 function Start-STUHeartbeat {
     [CmdletBinding()]
     param(
@@ -358,11 +375,13 @@ function Start-STUHeartbeat {
     }
 }
 
+<#
+ .SYNOPSIS
+  Login to ShanghaiTech Network, and send heartbeat continously
+#>
 function Start-STULoginer {
     [CmdletBinding()]
     param(
-        [Switch]
-        $Hidden = $false,
         [int]
         $RetryMax = 4,
         [int]
@@ -373,10 +392,6 @@ function Start-STULoginer {
     )
     
     $TryCount = 0
-
-    if ($Hidden) {
-        Start-Process pwsh -PassThru "-Hidden -Command 'Start-STULoginer -RetryMax $RetryMax -Interval $Interval -Credential $Credential'"
-    }
 
     if ($Credential) {
         Export-STUCredential -Credential $Credential
@@ -400,4 +415,3 @@ function Start-STULoginer {
 }
 
 Set-Alias -Name stulogin -Value Start-STULoginer
-Export-ModuleMember -Cmdlet Start-STUHeartbeat, Start-STULogin, Start-STULoginer -Alias stulogin
