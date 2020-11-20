@@ -98,7 +98,7 @@ PrivateData = @{
         Tags = @("ShanghaiTech")
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/KiruyaMomochi/ShanghaiTechLogin/blob/master/LICENSE'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/KiruyaMomochi/ShanghaiTechLogin'
