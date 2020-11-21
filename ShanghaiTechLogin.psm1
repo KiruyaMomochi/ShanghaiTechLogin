@@ -33,7 +33,7 @@ function Invoke-STULogin {
     $Login = Invoke-RestMethod -Uri $Script:LOGIN_URL `
              -Method Post -Body $Postdata -Headers $Script:HEADER `
              -SessionVariable LoginSession
-    if ($Login.accessStatus -ne 200) {
+    if ($Login.data.accessStatus -ne 200) {
         throw $Login.Message
     }
     $Token = $Login.token -replace 'token=', ''
