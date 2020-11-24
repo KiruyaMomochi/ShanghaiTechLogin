@@ -33,6 +33,9 @@ function Invoke-STULogin {
     $Login = Invoke-RestMethod -Uri $Script:LOGIN_URL `
              -Method Post -Body $Postdata -Headers $Script:HEADER `
              -SessionVariable LoginSession
+    if ($Login.data.accessStatus -eq 0) {
+        Remove-STUCredential
+    }
     if ($Login.data.accessStatus -ne 200) {
         throw $Login.Message
     }
@@ -266,7 +269,6 @@ function Start-STULogin {
         }
         else {
             $Credential = Get-Credential -Title $Script:PROMPT_TITLE -Message $Script:PROMPT_MESSAGE
-            Export-STUCredential -Credential $Credential
         }
     }
 
@@ -292,6 +294,8 @@ function Start-STULogin {
     Write-Host " " -NoNewline
     Write-Host ([datetime]::Now.ToLongTimeString()) -ForegroundColor DarkGray -NoNewline
     Write-Host "`tLogin successful!" -ForegroundColor Green
+
+    Export-STUCredential -Credential $Credential
 
     Format-List -InputObject $data -Property account, ip, logindate | Out-Host
 
@@ -398,16 +402,16 @@ function Start-STULoginer {
     
     $TryCount = 0
 
-    if ($Credential) {
-        Export-STUCredential -Credential $Credential
-    }
-
     while ($TryCount -lt $RetryMax) {
         $Session = Start-STULogin -Credential $Credential
         if ($null -eq $Session) {
             $TryCount++
         }
         else {
+            if ($Credential) {
+                Export-STUCredential -Credential $Credential
+            }
+            
             $Result = Start-STUHeartbeat -Session $Session -Interval $Interval -FailMax $RetryMax
             if ($Result -eq $false) {
                 $TryCount++
